@@ -1,0 +1,22 @@
+@import './sass/base/reset';
+@import './sass/components/register';
+@import'./sass/utilities/utilities';
+@import'./sass/components/messenger';
+@import'./sass/layout/grid';
+@import'./sass/components/ActiveFriend';
+@import'./sass/components/friends';
+@import'./sass/components/rightSide';
+@import'./sass/components/message';
+@import'./sass/components/messageSend';
+@import'./sass/components/friendinfo';
+
+:root {
+  --primary: #4f8cff;
+  --primary-light: #eaf1fb;
+  --text-color: #222;
+  --icon-color: #0b0b0b;
+  --icon-bg-color: #f5f7fa;
+  --border-color: #fff;
+  --text-white: #fff;
+  --shadow: 0 2px 8px rgba(0,0,0,0.06);
+}

@@ -1,0 +1,86 @@
+.register {
+  height: 100vh;
+  background: linear-gradient(135deg, #151d2c 0%, #0d1220 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .card {
+    .card-header {
+      margin-bottom: 20px;
+      h3 {
+        text-align: center;
+        color: var(--text-white);
+        font-size: 2rem;
+        letter-spacing: 0.1em;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+    }
+    .card-body {
+      .form-group {
+        .form-control {
+          color: var(--text-white);
+        }
+        &:last-child {
+          margin-bottom: 0;
+        }
+        span {
+          text-align: center;
+          a {
+            color: var(--active-icon-color);
+            font-weight: 600;
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+        .file-image {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+
+          .image {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid var(--image-border-color);
+            overflow: hidden;
+            box-shadow: 0 0 8px var(--active-icon-color);
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              transition: transform 0.3s ease;
+              &:hover {
+                transform: scale(1.1);
+              }
+            }
+          }
+          .file {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            .form-control {
+              display: none;
+            }
+            label {
+              background-color: #0a0e1585;
+              padding: 10px 20px;
+              border-radius: 50px;
+              color: var(--text-white);
+              cursor: pointer;
+              font-weight: 600;
+              transition: background-color 0.3s ease;
+              &:hover {
+                background-color: var(--active-icon-color);
+                color: var(--bg-color);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

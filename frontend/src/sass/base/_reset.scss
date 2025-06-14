@@ -1,0 +1,45 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --text-white: #fff;
+  --bg-color: #1a1f2b; /* Darker bg */
+  --text-color: #e0e6f0;
+  --icon-bg-color: #2a2f45;
+  --icon-color: #a0a8c0;
+  --search-bg: #4a536b33;
+  --active-color: #39445f99;
+  --border-color: #39445f;
+  --message-icon-color: #4ca1ff;
+  --fd-message-bg: #2a2f45;
+  --my-message-bg: #4a90e2;
+  --my-message-color: #fff;
+  --fd-message-color: #c0c8e0;
+  --image-border-color: #6b7188;
+  --active-icon-color: #7ed56f;
+  --hover-color: #55628b99;
+}
+
+body {
+  background-color: var(--bg-color);
+  font-family: 'Roboto', sans-serif;
+  color: var(--text-color);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  text-decoration: none;
+  color: var(--text-color);
+  transition: color 0.3s ease;
+  &:hover {
+    color: var(--active-icon-color);
+  }
+}
+
+li {
+  list-style: none;
+}
