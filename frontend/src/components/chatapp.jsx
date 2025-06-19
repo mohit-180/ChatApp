@@ -6,9 +6,17 @@ import RightSide from './RightSide';
 import { useDispatch, useSelector } from 'react-redux';
 import { getFriends, messageSend, getMessage, ImageMessageSend } from '../store/actions/messengerAction';
 
+import toast,{Toaster} from 'react-hot-toast';
 import { io } from 'socket.io-client';
+import useSound from 'use-sound';
+import notificationSound from '../audio/notification.wav';
+import sendingSound from '../audio/sending.wav';
+
 
 const ChatApp = () => {
+
+     const [notificationSPlay] = useSound(notificationSound);  
+    const [sendingSPlay] = useSound(sendingSound); 
 
      const scrollRef = useRef();
      const socket = useRef();
@@ -22,12 +30,17 @@ const ChatApp = () => {
 
      const [activeUser, setActiveUser] = useState([]);
      const [socketMessage, setSocketMessage] = useState('');
+     const [typingMessage, setTypingMessage] = useState({});
 
      useEffect(() => {
           socket.current = io('ws://localhost:8000');
           socket.current.on('getMessage',(data) => {
         setSocketMessage(data);
     })
+
+       socket.current.on('typingMessageGet',(data) => {
+          setTypingMessage(data);
+       })
      }, []);
 
 
@@ -53,31 +66,44 @@ const ChatApp = () => {
 
      useEffect(() => {
           socket.current.on('getUser', (users) => {
-               setActiveUser(users); // No filter here
+               const filterUser = users.filter(u => u.userId !== myInfo.id)
+               setActiveUser(filterUser); // No filter here
           })
      }, []);
 
+      useEffect(() => {
+      if(socketMessage && socketMessage.senderId !== currentfriend._id && socketMessage.reseverId === myInfo.id){
+           notificationSPlay();
+           toast.success(`${socketMessage.senderName} Send a New Message`)
 
+      }
+ },[socketMessage]);
 
 
      const inputHendle = (e) => {
-          setNewMessage(e.target.value);
+     setNewMessage(e.target.value);
 
+     socket.current.emit('typingMessage',{
+          senderId : myInfo.id,
+          reseverId : currentfriend._id,
+          msg : e.target.value
+     })
+
+ }
+
+  const sendMessage = (e) => {
+     e.preventDefault();
+     sendingSPlay();
+     const data = {
+          senderName : myInfo.username,
+          reseverId : currentfriend._id,
+          message : newMessage ? newMessage : '❤'
      }
 
-
-
-     const sendMessage = (e) => {
-          e.preventDefault();
-          const data = {
-               senderName: myInfo.username,
-               reseverId: currentfriend._id,
-               message: newMessage ? newMessage : '❤'
-          }
           
-     socket.current.emit('sendMessage',{
+    socket.current.emit('sendMessage',{
           senderId: myInfo.id,
-          senderName: myInfo.userName,
+          senderName: myInfo.username,
           reseverId: currentfriend._id,
           time: new Date(),
           message : {
@@ -86,23 +112,18 @@ const ChatApp = () => {
           }
      })
 
-      socket.current.emit('typingMessage',{
+     socket.current.emit('typingMessage',{
           senderId : myInfo.id,
           reseverId : currentfriend._id,
           msg : ''
      })
 
-
      dispatch(messageSend(data));
-      setNewMessage('')
-
-     }
-
+     setNewMessage('')
+ }
 
 
-     console.log(currentfriend);
-     console.log('activeUser:', activeUser);
-     console.log('myInfo.id:', myInfo.id, typeof myInfo.id);
+ console.log(currentfriend);
 
 
 
@@ -128,12 +149,18 @@ const ChatApp = () => {
 
 
      const emojiSend = (emu) => {
-          setNewMessage(`${newMessage}` + emu);
+          setNewMessage(`${newMessage}`+  emu);
+          socket.current.emit('typingMessage',{
+               senderId : myInfo.id,
+               reseverId : currentfriend._id,
+               msg : emu
+          })
      }
 
      const ImageSend = (e) => {
 
           if (e.target.files.length !== 0) {
+               sendingSPlay();
                const imagename = e.target.files[0].name;
                const newImageName = Date.now() + imagename;
 
@@ -165,6 +192,16 @@ const ChatApp = () => {
 
      return (
           <div className='messenger'>
+                <Toaster
+            position={'top-right'}
+            reverseOrder = {false}
+            toastOptions={{
+                 style : {
+                      fontSize : '18px'
+                 }
+            }}
+            
+            />
                <div className='row'>
                     <div className='col-3'>
                          <div className='left-side'>
@@ -229,7 +266,7 @@ const ChatApp = () => {
                               emojiSend={emojiSend}
                               ImageSend={ImageSend}
                               activeUser = {activeUser}
-                              //typingMessage = {typingMessage}
+                              typingMessage = {typingMessage}
                          /> : 'Please Select your Friend'
                     }
 
