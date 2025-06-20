@@ -6,13 +6,13 @@ const Friends = ({friend}) => {
        <div className='friend'>
             <div className='friend-image'>
                  <div className='image'>
-                 <img src={`/image/${friend.image}`} alt='' />
+                 <img src={`./image/${friend.fndInfo.image}`} alt='' />
                  </div>
             </div>
 
             <div className='friend-name-seen'>
                  <div className='friend-name'>
-                      <h4>{friend.username}</h4>
+                       <h4>{friend.fndInfo.username}</h4>
                  </div>
             </div>
        </div>
