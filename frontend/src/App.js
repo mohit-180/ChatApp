@@ -6,6 +6,7 @@ import {
 import Login from './components/Login';
 import Register from './components/Register';
 import ChatApp from './components/chatapp';
+import ProtectRoute from "./components/ProtectRoute";
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
         <Routes>
           <Route path="/chatapp/login" element={<Login/>}/>
           <Route path="/chatapp/register" element={<Register/>}/>
-          <Route path="/" element={<ChatApp/>}/> 
+           <Route path="/" element={ <ProtectRoute> <ChatApp /> </ProtectRoute> } /> 
         </Routes>
       </BrowserRouter>
     </div>

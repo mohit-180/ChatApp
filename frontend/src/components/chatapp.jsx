@@ -310,17 +310,17 @@ const ChatApp = () => {
                                    </div>
                               </div>
 
-                              <div className='active-friends'>
+                              {/*<div className='active-friends'>
                                    {
                                         activeUser && activeUser.length > 0 ? activeUser.filter(u => String(u.userId) !== String(myInfo.id)).map(u => <ActiveFriend setCurrentFriend={setCurrentFriend} user={u} />) : ''
                                    }
 
-                              </div>
+                              </div>*/}
 
                               <div className='friends'>
                                    {
                                          friends && friends.length>0 ? friends.map((fd) => <div onClick={()=> setCurrentFriend(fd.fndInfo)} className={currentfriend._id === fd.fndInfo._id ? 'hover-friend active' : 'hover-friend' }> 
-                                              <Friends myId = {myInfo.id}  friend={fd} />
+                                              <Friends activeUser= {activeUser} myId = {myInfo.id}  friend={fd} />
                                         </div>) : 'No Friend'
                                    }
 
