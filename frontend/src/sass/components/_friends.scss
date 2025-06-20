@@ -8,12 +8,12 @@
          display: none;
      }
      .hover-friend.active{
-          background-color: #dfdfdf;
+         background-color: var(--search-bg);
      }
      .hover-friend{
          cursor: pointer;
          &:hover{
-            background-color: #9ac9fb;
+            background-color: #017aff;
          }
          .friend{
              display: flex;
@@ -84,7 +84,7 @@
                          width: 15px;
                          height: 15px;
                          border-radius: 50%;
-                        background-color:#dfdfdf ;
+                         background-color: #1e6bbd;
                      }
                  }
              }

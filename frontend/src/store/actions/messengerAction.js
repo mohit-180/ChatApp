@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { FRIEND_GET_SUCCESS, MESSAGE_GET_SUCCESS, MESSAGE_SEND_SUCCESS } from "../types/messengerType";
+import {FRIEND_GET_SUCCESS,MESSAGE_GET_SUCCESS,MESSAGE_SEND_SUCCESS,THEME_GET_SUCCESS,THEME_SET_SUCCESS} from "../types/messengerType";
 
 export const getFriends = () => async (dispatch) => {
      try {
@@ -67,7 +67,7 @@ export const ImageMessageSend = (data) => async (dispatch) => {
 
 export const seenMessage = (msg) => async(dispatch)=> {
       try{
-          const response = await axios.post('/api/messenger/seen-message',msg);
+          const response = await axios.post('/api/chatapp/seen-message',msg);
           console.log(response.data);
      }catch (error){
           console.log(error.response.message)
@@ -78,10 +78,35 @@ export const seenMessage = (msg) => async(dispatch)=> {
 
 export const updateMessage = (msg) => async(dispatch)=> {
      try{
-          const response = await axios.post('/api/messenger/delivared-message',msg);
+          const response = await axios.post('/api/chatapp/delivared-message',msg);
           console.log(response.data);
      }catch (error){
           console.log(error.response.message)
 
      }
+}
+
+export const getTheme = () => async(dispatch) => {
+
+      const theme = localStorage.getItem('theme');
+     dispatch({
+          type: "THEME_GET_SUCCESS",
+          payload : {
+               theme : theme? theme : 'white'
+          }
+     })
+
+}
+
+
+export const themeSet = (theme) => async(dispatch) => {
+
+     localStorage.setItem('theme',theme);
+     dispatch({
+          type: "THEME_SET_SUCCESS",
+          payload : {
+               theme : theme
+          }
+     })
+     
 }

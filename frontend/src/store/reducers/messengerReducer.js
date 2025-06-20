@@ -3,11 +3,24 @@ const messengerState = {
      friends : [],
      message : [],
      mesageSendSuccess : false,
-     message_get_success : false
+     message_get_success : false,
+     themeMood : '',
+     new_user_add : ''
 }
 
 export const messengerReducer = (state=messengerState,action) => {
      const {type,payload} = action;
+
+
+     if(type === 'THEME_GET_SUCCESS' || type === 'THEME_SET_SUCCESS'){
+          return {
+               ...state,
+               themeMood : payload.theme
+          }
+     }
+
+
+
      if(type === FRIEND_GET_SUCCESS){
           return {
                ...state,
@@ -99,6 +112,30 @@ export const messengerReducer = (state=messengerState,action) => {
 
 
  
+ if(type === 'LOGOUT_SUCCESS'){
+          return {
+               ...state,
+               friends : [],
+               message : [],
+               mesageSendSuccess : false,
+               message_get_success : false,
+              
+          }
+     }
+
+ if(type === 'NEW_USER_ADD'){
+          return{
+               ...state,
+               new_user_add : payload.new_user_add
+          }
+     }
+
+     if(type === 'NEW_USER_ADD_CLEAR'){
+          return{
+               ...state,
+               new_user_add : ''
+          }
+     }
 
 
      return state;

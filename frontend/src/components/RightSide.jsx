@@ -69,7 +69,7 @@ const RightSide = (props) => {
                          </div>
 
                          <div className='col-4'>
-                              <FriendInfo currentfriend={currentfriend} activeUser = {activeUser} />
+                             <FriendInfo  message = { message} currentfriend={currentfriend} activeUser = {activeUser} />
                          </div>
 
 
