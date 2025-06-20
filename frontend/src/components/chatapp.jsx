@@ -15,14 +15,14 @@ import sendingSound from '../audio/sending.wav';
 
 const ChatApp = () => {
 
-     const [notificationSPlay] = useSound(notificationSound);  
+    const [notificationSPlay] = useSound(notificationSound);  
     const [sendingSPlay] = useSound(sendingSound); 
 
      const scrollRef = useRef();
      const socket = useRef();
 
 
-     const { friends, message } = useSelector(state => state.messenger);
+     const { friends, message , mesageSendSuccess} = useSelector(state => state.messenger);
      const { myInfo } = useSelector(state => state.auth);
 
      const [currentfriend, setCurrentFriend] = useState('');
@@ -101,16 +101,7 @@ const ChatApp = () => {
      }
 
           
-    socket.current.emit('sendMessage',{
-          senderId: myInfo.id,
-          senderName: myInfo.username,
-          reseverId: currentfriend._id,
-          time: new Date(),
-          message : {
-               text : newMessage ? newMessage : '❤',
-               image : ''
-          }
-     })
+    
 
      socket.current.emit('typingMessage',{
           senderId : myInfo.id,
@@ -121,6 +112,25 @@ const ChatApp = () => {
      dispatch(messageSend(data));
      setNewMessage('')
  }
+
+
+  useEffect(() => {
+      if(mesageSendSuccess){
+          socket.current.emit('sendMessage', message[message.length -1 ]);
+          dispatch({
+               type: 'UPDATE_FRIEND_MESSAGE',
+               payload : {
+                    msgInfo : message[message.length -1]
+               }
+          })
+          dispatch({
+               type: 'MESSAGE_SEND_SUCCESS_CLEAR'
+          })
+      }
+},[mesageSendSuccess]);
+
+
+
 
 
  console.log(currentfriend);
