@@ -49,3 +49,18 @@ export const userLogin = (data) => {
         }
     }
 }
+
+export const userLogout = () => async(dispatch) => {
+     try{
+         const response = await axios.post('/api/chatapp/user-logout');
+         if(response.data.success){
+             localStorage.removeItem('authToken');
+             dispatch({
+                 type : 'LOGOUT_SUCCESS'
+             })
+         }
+
+     }catch (error) {
+
+     }
+    } 

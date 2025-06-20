@@ -1,48 +1,48 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { FaEllipsisH, FaEdit, FaSistrix } from "react-icons/fa";
+import React,{ useEffect,useState,useRef } from 'react';
+import { FaEllipsisH,FaEdit,FaSistrix,FaSignOutAlt } from "react-icons/fa";
 import ActiveFriend from './ActiveFriend';
 import Friends from './Friends';
 import RightSide from './RightSide';
-import { useDispatch, useSelector } from 'react-redux';
-import { getFriends, messageSend, getMessage, ImageMessageSend, seenMessage, updateMessage } from '../store/actions/messengerAction';
+import {useDispatch ,useSelector } from 'react-redux';
+import { getFriends,messageSend,getMessage,ImageMessageSend,seenMessage,updateMessage } from '../store/actions/messengerAction';
+import {userLogout } from '../store/actions/authAction';
 
 import toast,{Toaster} from 'react-hot-toast';
-import { io } from 'socket.io-client';
+import {io} from 'socket.io-client';
 import useSound from 'use-sound';
 import notificationSound from '../audio/notification.wav';
 import sendingSound from '../audio/sending.wav';
 
+const Messenger = () => {
 
-const ChatApp = () => {
+ const [notificationSPlay] = useSound(notificationSound);   
+ const [sendingSPlay] = useSound(sendingSound);  
 
-    const [notificationSPlay] = useSound(notificationSound);  
-    const [sendingSPlay] = useSound(sendingSound); 
-
-     const scrollRef = useRef();
-     const socket = useRef();
+ const scrollRef = useRef();
+ const socket = useRef();
 
 
-     const { friends, message , mesageSendSuccess,message_get_success} = useSelector(state => state.messenger);
-     const { myInfo } = useSelector(state => state.auth);
+ const {friends,message,mesageSendSuccess,message_get_success} = useSelector(state => state.messenger );
+ const {myInfo} = useSelector(state => state.auth);
 
-     const [currentfriend, setCurrentFriend] = useState('');
-     const [newMessage, setNewMessage] = useState('');
+ const [currentfriend, setCurrentFriend] = useState('');
+ const [newMessage, setNewMessage] = useState('');
 
-     const [activeUser, setActiveUser] = useState([]);
-     const [socketMessage, setSocketMessage] = useState('');
-     const [typingMessage, setTypingMessage] = useState({});
+ const [activeUser, setActiveUser] = useState([]);
+ const [socketMessage, setSocketMessage] = useState('');
+ const [typingMessage, setTypingMessage] = useState('');
 
-     useEffect(() => {
-          socket.current = io('ws://localhost:8000');
-          socket.current.on('getMessage',(data) => {
+ useEffect(() => {
+    socket.current = io('ws://localhost:8000');
+    socket.current.on('getMessage',(data) => {
         setSocketMessage(data);
     })
 
-       socket.current.on('typingMessageGet',(data) => {
-          setTypingMessage(data);
-       })
+    socket.current.on('typingMessageGet',(data) => {
+     setTypingMessage(data);
+ })
 
-       socket.current.on('msgSeenResponse', msg => {
+ socket.current.on('msgSeenResponse', msg => {
      dispatch({
           type : 'SEEN_MESSAGE',
           payload : {
@@ -59,6 +59,7 @@ const ChatApp = () => {
           }
      })
  })
+
  socket.current.on('seenSuccess', data => {
       dispatch({
            type : 'SEEN_ALL',
@@ -66,10 +67,10 @@ const ChatApp = () => {
       })
  })
 
-     }, []);
+},[]);
 
 
-     useEffect(() => {
+useEffect(() => {
     if(socketMessage && currentfriend){
          if(socketMessage.senderId === currentfriend._id && socketMessage.reseverId === myInfo.id){
               dispatch({
@@ -78,8 +79,8 @@ const ChatApp = () => {
                         message: socketMessage
                    }
               })
-               dispatch(seenMessage(socketMessage))
-                socket.current.emit('messageSeen',socketMessage);
+              dispatch(seenMessage(socketMessage));
+              socket.current.emit('messageSeen',socketMessage);
               dispatch({
                type: 'UPDATE_FRIEND_MESSAGE',
                payload : {
@@ -94,18 +95,18 @@ const ChatApp = () => {
 
 
 
-     useEffect(() => {
-          socket.current.emit('addUser', myInfo.id, myInfo)
-     }, []);
+useEffect(() => {
+     socket.current.emit('addUser', myInfo.id, myInfo)
+ },[]);
 
-     useEffect(() => {
-          socket.current.on('getUser', (users) => {
-               const filterUser = users.filter(u => u.userId !== myInfo.id)
-               setActiveUser(filterUser); // No filter here
-          })
-     }, []);
+ useEffect(() => {
+     socket.current.on('getUser', (users)=>{
+          const filterUser = users.filter(u => u.userId !== myInfo.id)
+          setActiveUser(filterUser);
+     })
+ },[]);
 
-      useEffect(() => {
+ useEffect(() => {
       if(socketMessage && socketMessage.senderId !== currentfriend._id && socketMessage.reseverId === myInfo.id){
            notificationSPlay();
            toast.success(`${socketMessage.senderName} Send a New Message`)
@@ -123,7 +124,9 @@ const ChatApp = () => {
  },[socketMessage]);
 
 
-     const inputHendle = (e) => {
+ 
+
+ const inputHendle = (e) => {
      setNewMessage(e.target.value);
 
      socket.current.emit('typingMessage',{
@@ -133,8 +136,8 @@ const ChatApp = () => {
      })
 
  }
-
-  const sendMessage = (e) => {
+ 
+ const sendMessage = (e) => {
      e.preventDefault();
      sendingSPlay();
      const data = {
@@ -143,9 +146,7 @@ const ChatApp = () => {
           message : newMessage ? newMessage : '❤'
      }
 
-          
-    
-
+     
      socket.current.emit('typingMessage',{
           senderId : myInfo.id,
           reseverId : currentfriend._id,
@@ -157,7 +158,7 @@ const ChatApp = () => {
  }
 
 
-  useEffect(() => {
+ useEffect(() => {
       if(mesageSendSuccess){
           socket.current.emit('sendMessage', message[message.length -1 ]);
           dispatch({
@@ -174,42 +175,40 @@ const ChatApp = () => {
 
 
 
-
-
- console.log(currentfriend);
+ console.log(currentfriend);   
 
 
 
      const dispatch = useDispatch();
      useEffect(() => {
           dispatch(getFriends());
-     }, []);
+     },[]);
 
      useEffect(() => {
-          if (friends && friends.length > 0)
-               setCurrentFriend(friends[0].fndInfo)
-
-     }, [friends]);
+         if(friends && friends.length > 0)
+         setCurrentFriend(friends[0].fndInfo)
+       
+     },[friends]);
 
 
      useEffect(() => {
-          dispatch(getMessage(currentfriend._id))
-           if(friends.length > 0){
+          dispatch(getMessage(currentfriend._id));
+          if(friends.length > 0){
               
           }
+      },[ currentfriend?._id]);
 
-     }, [currentfriend?._id]);
 
-     useEffect(() => {
+      useEffect(() => {
            if(message.length > 0){
                 if(message[message.length -1].senderId !== myInfo.id && message[message.length -1].status !== 'seen'){
-                     dispatch({
-                    type: 'UPDATE',
-                    payload : {
-                         id : currentfriend._id
-                    }
-               })
-                    socket.current.emit('seen', { senderId: currentfriend._id, reseverId: myInfo.id })
+                    dispatch({
+                         type: 'UPDATE',
+                         payload : {
+                              id : currentfriend._id
+                         }
+                    })
+                     socket.current.emit('seen', { senderId: currentfriend._id, reseverId: myInfo.id })
                 dispatch(seenMessage({ _id: message[message.length -1]._id }))
                }
            }
@@ -220,10 +219,11 @@ const ChatApp = () => {
       },[ message_get_success]);
 
 
-     useEffect(() => {
-          scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
-     }, [message]);
-
+ 
+      useEffect(() => {
+          scrollRef.current?.scrollIntoView({behavior: 'smooth'}) 
+      },[ message]);
+ 
 
      const emojiSend = (emu) => {
           setNewMessage(`${newMessage}`+  emu);
@@ -236,12 +236,12 @@ const ChatApp = () => {
 
      const ImageSend = (e) => {
 
-          if (e.target.files.length !== 0) {
+          if(e.target.files.length !== 0){
                sendingSPlay();
                const imagename = e.target.files[0].name;
                const newImageName = Date.now() + imagename;
 
-                socket.current.emit('sendMessage',{
+               socket.current.emit('sendMessage',{
                     senderId: myInfo.id,
                     senderName: myInfo.username,
                     reseverId: currentfriend._id,
@@ -254,22 +254,26 @@ const ChatApp = () => {
 
                const formData = new FormData();
 
-               formData.append('senderName', myInfo.username);
-               formData.append('imageName', newImageName);
-               formData.append('reseverId', currentfriend._id);
+               formData.append('senderName',myInfo.username);
+               formData.append('imageName',newImageName);
+               formData.append('reseverId',currentfriend._id);
                formData.append('image', e.target.files[0]);
                dispatch(ImageMessageSend(formData));
-
-          }
-
-
-
+                
+          } 
+         
      }
 
+     const [hide, setHide] = useState(true);
 
-     return (
-          <div className='messenger'>
-                <Toaster
+     const logout = () => {
+          dispatch(userLogout());
+          socket.current.emit('logout', myInfo.id);
+     }
+
+  return (
+       <div className='messenger'>
+            <Toaster
             position={'top-right'}
             reverseOrder = {false}
             toastOptions={{
@@ -279,79 +283,109 @@ const ChatApp = () => {
             }}
             
             />
-               <div className='row'>
-                    <div className='col-3'>
-                         <div className='left-side'>
-                              <div className='top'>
-                                   <div className='image-name'>
-                                        <div className='image'>
-                                             <img src={`/image/${myInfo.image}`} alt='' />
-
-                                        </div>
-                                        <div className='name'>
-                                             <h3>{myInfo.username} </h3>
-                                        </div>
-                                   </div>
-
-                                   <div className='icons'>
-                                        <div className='icon'>
-                                             <FaEllipsisH />
-                                        </div>
-                                        <div className='icon'>
-                                             <FaEdit />
-                                        </div>
-                                   </div>
-                              </div>
-
-                              <div className='friend-search'>
-                                   <div className='search'>
-                                        <button> <FaSistrix /> </button>
-                                        <input type="text" placeholder='Search' className='form-control' />
-                                   </div>
-                              </div>
-
-                              {/*<div className='active-friends'>
-                                   {
-                                        activeUser && activeUser.length > 0 ? activeUser.filter(u => String(u.userId) !== String(myInfo.id)).map(u => <ActiveFriend setCurrentFriend={setCurrentFriend} user={u} />) : ''
-                                   }
-
-                              </div>*/}
-
-                              <div className='friends'>
-                                   {
-                                         friends && friends.length>0 ? friends.map((fd) => <div onClick={()=> setCurrentFriend(fd.fndInfo)} className={currentfriend._id === fd.fndInfo._id ? 'hover-friend active' : 'hover-friend' }> 
-                                              <Friends activeUser= {activeUser} myId = {myInfo.id}  friend={fd} />
-                                        </div>) : 'No Friend'
-                                   }
 
 
-
-                              </div>
+<div className='row'>
+     <div className='col-3'>
+          <div className='left-side'>
+               <div className='top'>
+                    <div className='image-name'>
+                         <div className='image'>
+                              <img src={`/image/${myInfo.image}`} alt='' />
 
                          </div>
+                         <div className='name'>
+                         <h3>{myInfo.username} </h3>
+                         </div>
+                       </div>
 
+                       <div className='icons'>
+  <div onClick={()=> setHide(!hide) }  className='icon'>
+                              <FaEllipsisH />
+                            </div>
+                            <div className='icon'>
+                                  <FaEdit/> 
+                            </div>
+
+            <div className={hide ? 'theme_logout' : 'theme_logout show'}>
+                 <h3>Dark Mode </h3>
+            <div className='on'>
+                 <label htmlFor='dark'>ON</label>
+                 <input type="radio" value="dark" name="theme" id="dark" />
+                 </div>
+
+                 <div className='of'>
+                 <label htmlFor='white'>OFF</label>
+                 <input type="radio" value="white" name="theme" id="white" />
+                 </div>
+
+                 <div onClick={logout} className='logout'>
+               <FaSignOutAlt /> Logout
+                 </div>
+
+
+
+            </div>
+
+
+
+
+
+
+
+
+                       </div>
+               </div>
+
+               <div className='friend-search'>
+                    <div className='search'>
+                    <button> <FaSistrix /> </button>
+                    <input type="text" placeholder='Search' className='form-control' />
                     </div>
+               </div>
 
-                    {
-                         currentfriend ? <RightSide
-                              currentfriend={currentfriend}
-                              inputHendle={inputHendle}
-                              newMessage={newMessage}
-                              sendMessage={sendMessage}
-                              message={message}
-                              scrollRef={scrollRef}
-                              emojiSend={emojiSend}
-                              ImageSend={ImageSend}
-                              activeUser = {activeUser}
-                              typingMessage = {typingMessage}
-                         /> : 'Please Select your Friend'
-                    }
+               {/* <div className='active-friends'>
+     {
+        activeUser && activeUser.length > 0 ? activeUser.map(u =>  <ActiveFriend setCurrentFriend = {setCurrentFriend} user={u} />) : ''  
+     }
+                        
+               </div> */}
 
+               <div className='friends'>
+     {
+          friends && friends.length>0 ? friends.map((fd) => <div onClick={()=> setCurrentFriend(fd.fndInfo)} className={currentfriend._id === fd.fndInfo._id ? 'hover-friend active' : 'hover-friend' }> 
+          <Friends activeUser= {activeUser} myId = {myInfo.id}  friend={fd} />
+          </div> ) : 'No Friend'
+     } 
+                    
+                    
 
                </div>
 
           </div>
-     )
+                      
+                 </div>
+
+     {
+          currentfriend ?  <RightSide 
+          currentfriend={currentfriend}
+          inputHendle={inputHendle}
+          newMessage={newMessage}
+          sendMessage={sendMessage}
+          message={message}
+          scrollRef= {scrollRef}
+          emojiSend = {emojiSend}
+          ImageSend= {ImageSend}
+          activeUser = {activeUser}
+          typingMessage = {typingMessage}
+          /> : 'Please Select your Friend'
+     }
+                
+
+            </div>
+
+       </div>
+  )
 };
 
-export default ChatApp;
+export default Messenger;

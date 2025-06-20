@@ -1,4 +1,4 @@
-import { REGISTER_FAIL, USER_LOGIN_FAIL, USER_LOGIN_SUCCESS } from "../types/authType";
+import { REGISTER_FAIL, USER_LOGIN_FAIL, USER_LOGIN_SUCCESS,LOGOUT_SUCCESS } from "../types/authType";
 import { REGISTER_SUCCESS} from "../types/authType";
 import { SUCCESS_MESSAGE_CLEAR } from "../types/authType";
 import { ERROR_CLEAR } from "../types/authType";
@@ -71,6 +71,17 @@ export const authReducer = (state = authState, action) => {
             error: ''
         }
     }
+
+     if(type === 'LOGOUT_SUCCESS'){
+          return {
+               ...state,
+               authenticate : false,
+               myInfo : '',
+               successMessage: 'Logout Successfull',
+              
+          }
+     }
+
     
     return state;
 }
